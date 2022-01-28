@@ -1,0 +1,61 @@
+{-# STDLIB_VERSION 5 #-}
+{-# CONTENT_TYPE DAPP #-}
+{-# SCRIPT_TYPE ACCOUNT #-}
+
+let ownerStore = "owner"
+let initStore = "init"
+
+func balanceStore(address: Address) = {
+  address.toString() + "_balance"
+}
+
+func balanceOf(address: Address) = {
+  getIntegerValue(balanceStore(address))
+}
+
+func mustOwner(address: Address) = {
+  if address.toString() != getStringValue(ownerStore) then
+    throw("only owner allowed to call it") else
+    true
+}
+
+func mintPrivate(address: Address, amount: Int) = {
+  IntegerEntry(balanceStore(address), amount)
+}
+
+@Callable(i)
+func getOwner() = {
+  (
+    [],
+    getStringValue(ownerStore)
+  )
+}
+
+@Callable(i)
+func setOwner() = {
+  let init = getBoolean(initStore)
+  if isDefined(init) then
+    strict doCheck = mustOwner(i.caller)
+    (
+      [
+        StringEntry(ownerStore, i.caller.toString())
+      ],
+      true
+    ) else (
+      [
+        BooleanEntry(initStore, true),
+        StringEntry(ownerStore, i.caller.toString())
+      ],
+      true
+    )
+}
+
+@Callable(i)
+func mint(address: String, amount: Int) = {
+  strict doCheck = mustOwner(i.caller)
+  strict doMint = mintPrivate(addressFromStringValue(address), amount)
+  (
+    [],
+    true
+  )
+}
