@@ -1,0 +1,35 @@
+{
+  "name": "learn-ride",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test/test.js",
+  "scripts": {
+    "start-node": "docker run --name waves-private-node -d -p 6869:6869 wavesplatform/waves-private-node",
+    "stop-node": "docker stop waves-private-node",
+    "drop-node": "docker rm waves-private-node",
+    "reset-state": "npm run stop-node && npm run drop-node && npm run start-node",
+    "explorer": "docker run -d -e API_NODE_URL=http://localhost:6869 -e NODE_LIST=http://localhost:6869 -p 3000:8080 wavesplatform/explorer",
+    "compile": "surfboard compile ride/main.ride",
+    "test": "npm run compile && npm run start-node && surfboard test test/main.ride-test.js",
+    "deploy": "surfboard run main.deploy.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nnqq/learn-ride.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nnqq/learn-ride/issues"
+  },
+  "homepage": "https://github.com/nnqq/learn-ride#readme",
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.1.0",
+    "@waves/surfboard": "^2.2.5-beta.1",
+    "eslint": "^8.8.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4"
+  }
+}
